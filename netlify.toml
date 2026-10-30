@@ -9,6 +9,12 @@
   external_node_modules = ["express", "serverless-http", "canvas"]
 
 [[redirects]]
+  from = "/api/"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api"
   to = "/.netlify/functions/api"
   status = 200
