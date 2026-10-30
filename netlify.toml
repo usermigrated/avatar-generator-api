@@ -10,12 +10,6 @@
   included_files = ["fonts/**"]
 
 [[redirects]]
-  from = "/api"
-  to = "/.netlify/functions/api"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
