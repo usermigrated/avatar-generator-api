@@ -406,7 +406,7 @@ pre code a:hover {
 
             <div class="endpoint">
                 <span class="method">GET</span>
-                http://localhost:3000/?name=den%20mark
+                https://ui-avatars.netlify.app/?name=den%20mark
             </div>
 
             <div class="avatar-demo">
@@ -478,7 +478,7 @@ npm install express canvas</code></pre>
 
             <div class="success">
                 Your API should now be running at
-                http://localhost:3000
+                https://ui-avatars.netlify.app
             </div>
         </section> -->
 
@@ -489,7 +489,7 @@ npm install express canvas</code></pre>
                 <span class="tag">GET</span>
                 <h3>Generate Avatar</h3>
 
-                <pre><code>http://localhost:3000/</code></pre>
+                <pre><code>https://ui-avatars.netlify.app/</code></pre>
 
                 <p>
                     Returns a dynamically generated PNG image.
@@ -635,25 +635,25 @@ npm install express canvas</code></pre>
     <h2>Request Examples</h2>
 
     <h3>1. Default avatar</h3>
-    <pre><code><a href="http://localhost:3000/?name=john+doe" target="_blank" rel="noopener noreferrer">http://localhost:3000/?name=john+doe</a></code></pre>
+    <pre><code><a href="https://ui-avatars.netlify.app/?name=john+doe" target="_blank" rel="noopener noreferrer">https://ui-avatars.netlify.app/?name=john+doe</a></code></pre>
 
     <h3>2. Custom background and text</h3>
-    <pre><code><a href="http://localhost:3000/?name=john+doe&amp;background=0D8ABC&amp;color=fff" target="_blank" rel="noopener noreferrer">http://localhost:3000/?name=john+doe&amp;background=0D8ABC&amp;color=fff</a></code></pre>
+    <pre><code><a href="https://ui-avatars.netlify.app/?name=john+doe&amp;background=0D8ABC&amp;color=fff" target="_blank" rel="noopener noreferrer">https://ui-avatars.netlify.app/?name=john+doe&amp;background=0D8ABC&amp;color=fff</a></code></pre>
 
     <h3>3. Random background</h3>
-    <pre><code><a href="http://localhost:3000/?name=john+doe&amp;background=random" target="_blank" rel="noopener noreferrer">http://localhost:3000/?name=john+doe&amp;background=random</a></code></pre>
+    <pre><code><a href="https://ui-avatars.netlify.app/?name=john+doe&amp;background=random" target="_blank" rel="noopener noreferrer">https://ui-avatars.netlify.app/?name=john+doe&amp;background=random</a></code></pre>
 
     <h3>4. Custom image dimensions</h3>
-    <pre><code><a href="http://localhost:3000/?name=john+doe&amp;size=128" target="_blank" rel="noopener noreferrer">http://localhost:3000/?name=john+doe&amp;size=128</a></code></pre>
+    <pre><code><a href="https://ui-avatars.netlify.app/?name=john+doe&amp;size=128" target="_blank" rel="noopener noreferrer">https://ui-avatars.netlify.app/?name=john+doe&amp;size=128</a></code></pre>
 
     <h3>5. Custom font size</h3>
-    <pre><code><a href="http://localhost:3000/?name=john+doe&amp;font-size=40" target="_blank" rel="noopener noreferrer">http://localhost:3000/?name=john+doe&amp;font-size=40</a></code></pre>
+    <pre><code><a href="https://ui-avatars.netlify.app/?name=john+doe&amp;font-size=40" target="_blank" rel="noopener noreferrer">https://ui-avatars.netlify.app/?name=john+doe&amp;font-size=40</a></code></pre>
 
     <h3>6. Lowercase initials</h3>
-    <pre><code><a href="http://localhost:3000/?name=john&amp;uppercase=false" target="_blank" rel="noopener noreferrer">http://localhost:3000/?name=john&amp;uppercase=false</a></code></pre>
+    <pre><code><a href="https://ui-avatars.netlify.app/?name=john&amp;uppercase=false" target="_blank" rel="noopener noreferrer">https://ui-avatars.netlify.app/?name=john&amp;uppercase=false</a></code></pre>
 
     <h3>7. No name supplied</h3>
-    <pre><code><a href="http://localhost:3000/" target="_blank" rel="noopener noreferrer">http://localhost:3000/</a></code></pre>
+    <pre><code><a href="https://ui-avatars.netlify.app/" target="_blank" rel="noopener noreferrer">https://ui-avatars.netlify.app/</a></code></pre>
 </section>
 
 
@@ -703,7 +703,7 @@ npm install express canvas</code></pre>
             </p>
 
             <pre><code>&lt;img
-    src="http://localhost:3000/?name=John Doe&background=0D8ABC&color=fff&size=128"
+    src="https://ui-avatars.netlify.app/?name=John Doe&background=0D8ABC&color=fff&size=128"
     alt="User Avatar"
 &gt;</code></pre>
 
@@ -712,7 +712,7 @@ npm install express canvas</code></pre>
             <pre><code>const name = "John Doe";
 
 const avatarUrl =
-    `http://localhost:3000/?name=${encodeURIComponent(name)}`;
+    `https://ui-avatars.netlify.app/?name=${encodeURIComponent(name)}`;
 
 document.querySelector('#avatar').src = avatarUrl;</code></pre>
 
