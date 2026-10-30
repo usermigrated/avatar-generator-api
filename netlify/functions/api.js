@@ -1,6 +1,16 @@
 
-const { createCanvas } = require('canvas');
+// const { createCanvas } = require('canvas');
+const { createCanvas, registerFont } = require('canvas');
+const path = require('path');
 
+const fontPath = path.join(
+    __dirname,
+    '../../fonts/DejaVuSans.ttf'
+);
+
+registerFont(fontPath, {
+    family: 'AvatarFont'
+});
 // Default configuration
 const DEFAULTS = {
     background: '#dddddd',
@@ -112,10 +122,9 @@ exports.handler = async (event) => {
 
         // Automatically fit text
         let fontSize = Math.round(size * 0.44);
-        const fontFamily = 'DejaVu Sans';
 
 
-        ctx.font = `500 ${fontSize}px "${fontFamily}"`;
+        ctx.font = `${fontSize}px AvatarFont`;
 
 
         while (
@@ -124,7 +133,7 @@ exports.handler = async (event) => {
             fontSize > 8
         ) {
             fontSize--;
-            ctx.font = `500 ${fontSize}px "${fontFamily}"`;
+            ctx.font = `${fontSize}px AvatarFont`;
         }
 
         // Text styling

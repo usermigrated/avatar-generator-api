@@ -6,6 +6,7 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+  included_files = ["fonts/**"]
   external_node_modules = ["express", "serverless-http", "canvas"]
 
 [[redirects]]
