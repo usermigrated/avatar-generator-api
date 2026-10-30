@@ -70,23 +70,94 @@ function getNumber(value, fallback, min, max) {
     return Math.min(Math.max(Math.round(number), min), max);
 }
 
-app.get('/', (req, res) => {
-    const canvas = createCanvas(200, 200);
-    const ctx = canvas.getContext('2d');
+app.use((req, res) => {
 
-    ctx.fillStyle = '#0D8ABC';
-    ctx.fillRect(0, 0, 200, 200);
+        try {
+        const name = String(req.query.name || '');
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 60px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('JD', 100, 100);
+        // Uppercase setting
+        const uppercase = String(req.query.uppercase ?? 'true')
+            .toLowerCase() !== 'false';
 
-    const buffer = canvas.toBuffer('image/png');
+        // Image size
+        const size = getNumber(
+            req.query.size,
+            DEFAULTS.size,
+            16,
+            512
+        );
 
-    res.setHeader('Content-Type', 'image/png');
-    res.end(buffer);
+        // Background colour
+        let background = DEFAULTS.background;
+
+        if (req.query.background === 'random') {
+            background = randomColor();
+        } else if (req.query.background) {
+            background = getColor(
+                String(req.query.background),
+                DEFAULTS.background
+            );
+        }
+
+        // Text colour
+        const color = getColor(
+            String(req.query.color || ''),
+            DEFAULTS.color
+        );
+
+        // Generate initials
+        const initials = getInitials(name, uppercase);
+
+        // Create image
+        const canvas = createCanvas(size, size);
+        const ctx = canvas.getContext('2d');
+
+        // Background
+        ctx.fillStyle = background;
+        ctx.fillRect(0, 0, size, size);
+
+        // Automatically fit text inside avatar
+        let fontSize = Math.round(size * 0.44);
+
+        ctx.font = `${fontSize}px Arial`;
+
+        while (
+            ctx.measureText(initials).width > size * 0.85 &&
+            fontSize > 8
+        ) {
+            fontSize--;
+            ctx.font = `${fontSize}px Arial`;
+        }
+
+        // Text styling
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Draw initials
+        if (initials) {
+            ctx.fillText(initials, size / 2, size / 2);
+        }
+
+        // Return PNG
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+
+        const buffer = canvas.toBuffer('image/png');
+
+        console.log('PNG buffer size:', buffer.length);
+        console.log('PNG signature:', buffer.subarray(0, 8).toString('hex'));
+
+        res.status(200);
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Content-Length', buffer.length);
+        res.setHeader('Cache-Control', 'no-cache');
+
+        res.end(buffer);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Unable to generate avatar');
+    }
 });
 
 exports.handler = serverless(app);
