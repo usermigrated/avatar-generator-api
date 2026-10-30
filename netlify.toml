@@ -1,3 +1,4 @@
+
 [build]
   command = "npm install"
   publish = "public"
@@ -7,6 +8,12 @@
   node_bundler = "esbuild"
   external_node_modules = ["express", "serverless-http", "canvas"]
   included_files = ["fonts/**"]
+
+[[redirects]]
+  from = "/api"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/api/*"

@@ -6,7 +6,6 @@ const path = require('path');
 
 const app = express();
 
-const router = express.Router();
 // Default configuration
 const DEFAULTS = {
     background: '#dddddd',
@@ -83,8 +82,7 @@ const FONT_CONFIG = [
 
 // Register available Unicode fonts
 FONT_CONFIG.forEach(font => {
-    const fontPath = path.join(__dirname, 'fonts', font.file);
-
+const fontPath = path.join(__dirname, '../../fonts', font.file);
     if (fs.existsSync(fontPath)) {
         registerFont(fontPath, {
             family: font.family
@@ -249,7 +247,7 @@ app.get('/', (req, res) => {
         res.status(500).send('Unable to generate avatar');
     }
 });
-app.use('/api', router);
+
 
 exports.handler = serverless(app);
 // // Start server
