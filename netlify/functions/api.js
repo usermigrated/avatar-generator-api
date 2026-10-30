@@ -1,9 +1,5 @@
 
-const serverless = require('serverless-http');
-const express = require('express');
 const { createCanvas } = require('canvas');
-
-const app = express();
 
 // Default configuration
 const DEFAULTS = {
@@ -13,7 +9,7 @@ const DEFAULTS = {
     uppercase: true
 };
 
-// Get initials using Unicode grapheme segmentation
+// Get initials
 function getInitials(name, uppercase = true) {
     if (!name || !name.trim()) return '';
 
@@ -29,10 +25,8 @@ function getInitials(name, uppercase = true) {
     let initials;
 
     if (words.length === 1) {
-        // Single name: first two characters
         initials = getCharacters(words[0]).slice(0, 2).join('');
     } else {
-        // Multiple names: first character of first and last name
         initials =
             getCharacters(words[0])[0] +
             getCharacters(words[words.length - 1])[0];
@@ -52,7 +46,7 @@ function getColor(value, fallback) {
         : fallback;
 }
 
-// Generate random hexadecimal colour
+// Generate random colour
 function randomColor() {
     return '#' + Math.floor(Math.random() * 16777215)
         .toString(16)
@@ -70,18 +64,18 @@ function getNumber(value, fallback, min, max) {
     return Math.min(Math.max(Math.round(number), min), max);
 }
 
-app.use((req, res) => {
+// Netlify Function
+exports.handler = async (event) => {
+    try {
+        const params = event.queryStringParameters || {};
 
-        try {
-        const name = String(req.query.name || '');
+        const name = String(params.name || '');
 
-        // Uppercase setting
-        const uppercase = String(req.query.uppercase ?? 'true')
+        const uppercase = String(params.uppercase ?? 'true')
             .toLowerCase() !== 'false';
 
-        // Image size
         const size = getNumber(
-            req.query.size,
+            params.size,
             DEFAULTS.size,
             16,
             512
@@ -90,25 +84,25 @@ app.use((req, res) => {
         // Background colour
         let background = DEFAULTS.background;
 
-        if (req.query.background === 'random') {
+        if (params.background === 'random') {
             background = randomColor();
-        } else if (req.query.background) {
+        } else if (params.background) {
             background = getColor(
-                String(req.query.background),
+                String(params.background),
                 DEFAULTS.background
             );
         }
 
         // Text colour
         const color = getColor(
-            String(req.query.color || ''),
+            String(params.color || ''),
             DEFAULTS.color
         );
 
         // Generate initials
         const initials = getInitials(name, uppercase);
 
-        // Create image
+        // Create canvas
         const canvas = createCanvas(size, size);
         const ctx = canvas.getContext('2d');
 
@@ -116,12 +110,13 @@ app.use((req, res) => {
         ctx.fillStyle = background;
         ctx.fillRect(0, 0, size, size);
 
-        // Automatically fit text inside avatar
+        // Automatically fit text
         let fontSize = Math.round(size * 0.44);
 
         ctx.font = `${fontSize}px Arial`;
 
         while (
+            initials &&
             ctx.measureText(initials).width > size * 0.85 &&
             fontSize > 8
         ) {
@@ -139,25 +134,29 @@ app.use((req, res) => {
             ctx.fillText(initials, size / 2, size / 2);
         }
 
-        // Return PNG
-        res.setHeader('Content-Type', 'image/png');
-        res.setHeader('Cache-Control', 'public, max-age=3600');
-
+        // Generate PNG buffer
         const buffer = canvas.toBuffer('image/png');
 
-        console.log('PNG buffer size:', buffer.length);
-        console.log('PNG signature:', buffer.subarray(0, 8).toString('hex'));
+        // Return Base64-encoded binary image
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'image/png',
+                'Cache-Control': 'public, max-age=3600'
+            },
+            body: buffer.toString('base64'),
+            isBase64Encoded: true
+        };
 
-        res.status(200);
-        res.setHeader('Content-Type', 'image/png');
-        res.setHeader('Content-Length', buffer.length);
-        res.setHeader('Cache-Control', 'no-cache');
-
-        res.end(buffer);
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Unable to generate avatar');
-    }
-});
+        console.error('Avatar generation error:', error);
 
-exports.handler = serverless(app);
+        return {
+            statusCode: 500,
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: 'Unable to generate avatar'
+        };
+    }
+};
