@@ -156,7 +156,7 @@ function getNumber(value, fallback, min, max) {
     return Math.min(Math.max(Math.round(number), min), max);
 }
 
-router.get('/', (req, res) => {
+app.get('/', (req, res) => {
     try {
         const name = String(req.query.name || '');
 
