@@ -6,7 +6,7 @@ const path = require('path');
 
 const app = express();
 
-
+const router = express.Router();
 // Default configuration
 const DEFAULTS = {
     background: '#dddddd',
@@ -249,6 +249,8 @@ app.get('/', (req, res) => {
         res.status(500).send('Unable to generate avatar');
     }
 });
+app.use('/api', router);
+
 exports.handler = serverless(app);
 // // Start server
 // app.listen(3000, () => {
