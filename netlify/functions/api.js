@@ -70,85 +70,23 @@ function getNumber(value, fallback, min, max) {
     return Math.min(Math.max(Math.round(number), min), max);
 }
 
-app.use((req, res) => {
-    
-        try {
-        const name = String(req.query.name || '');
+app.get('/', (req, res) => {
+    const canvas = createCanvas(200, 200);
+    const ctx = canvas.getContext('2d');
 
-        // Uppercase setting
-        const uppercase = String(req.query.uppercase ?? 'true')
-            .toLowerCase() !== 'false';
+    ctx.fillStyle = '#0D8ABC';
+    ctx.fillRect(0, 0, 200, 200);
 
-        // Image size
-        const size = getNumber(
-            req.query.size,
-            DEFAULTS.size,
-            16,
-            512
-        );
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 60px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('JD', 100, 100);
 
-        // Background colour
-        let background = DEFAULTS.background;
+    const buffer = canvas.toBuffer('image/png');
 
-        if (req.query.background === 'random') {
-            background = randomColor();
-        } else if (req.query.background) {
-            background = getColor(
-                String(req.query.background),
-                DEFAULTS.background
-            );
-        }
-
-        // Text colour
-        const color = getColor(
-            String(req.query.color || ''),
-            DEFAULTS.color
-        );
-
-        // Generate initials
-        const initials = getInitials(name, uppercase);
-
-        // Create image
-        const canvas = createCanvas(size, size);
-        const ctx = canvas.getContext('2d');
-
-        // Background
-        ctx.fillStyle = background;
-        ctx.fillRect(0, 0, size, size);
-
-        // Automatically fit text inside avatar
-        let fontSize = Math.round(size * 0.44);
-
-        ctx.font = `${fontSize}px Arial`;
-
-        while (
-            ctx.measureText(initials).width > size * 0.85 &&
-            fontSize > 8
-        ) {
-            fontSize--;
-            ctx.font = `${fontSize}px Arial`;
-        }
-
-        // Text styling
-        ctx.fillStyle = color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // Draw initials
-        if (initials) {
-            ctx.fillText(initials, size / 2, size / 2);
-        }
-
-        // Return PNG
-        res.setHeader('Content-Type', 'image/png');
-        res.setHeader('Cache-Control', 'public, max-age=3600');
-
-        res.send(canvas.toBuffer('image/png'));
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Unable to generate avatar');
-    }
+    res.setHeader('Content-Type', 'image/png');
+    res.end(buffer);
 });
 
 exports.handler = serverless(app);
