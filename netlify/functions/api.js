@@ -112,8 +112,11 @@ exports.handler = async (event) => {
 
         // Automatically fit text
         let fontSize = Math.round(size * 0.44);
+        const fontFamily = 'DejaVu Sans';
 
-        ctx.font = `${fontSize}px Arial`;
+
+        ctx.font = `500 ${fontSize}px "${fontFamily}"`;
+
 
         while (
             initials &&
@@ -121,7 +124,7 @@ exports.handler = async (event) => {
             fontSize > 8
         ) {
             fontSize--;
-            ctx.font = `${fontSize}px Arial`;
+            ctx.font = `500 ${fontSize}px "${fontFamily}"`;
         }
 
         // Text styling
