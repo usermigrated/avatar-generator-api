@@ -81,18 +81,38 @@ const FONT_CONFIG = [
 ];
 
 // Register available Unicode fonts
+// Register available Unicode fonts safely
+const REGISTERED_FONTS = new Set();
+
 FONT_CONFIG.forEach(font => {
-const fontPath = path.join(__dirname, '../../fonts', font.file);
-    if (fs.existsSync(fontPath)) {
+    const fontPath = path.join(__dirname, '../../font', font.file);
+
+    if (!fs.existsSync(fontPath)) {
+        console.warn(`Font not found: ${font.file}`);
+        return;
+    }
+
+    try {
         registerFont(fontPath, {
             family: font.family
         });
+
+        REGISTERED_FONTS.add(font.family);
+
+        console.log(`Font registered: ${font.name}`);
+    } catch (error) {
+        console.error(
+            `Failed to register ${font.file}: ${error.message}`
+        );
     }
 });
 
 // Detect the appropriate font
 function getFontFamily(text) {
-    const matchedFont = FONT_CONFIG.find(font => font.regex.test(text));
+    const matchedFont = FONT_CONFIG.find(font =>
+        font.regex.test(text) &&
+        REGISTERED_FONTS.has(font.family)
+    );
 
     return matchedFont ? matchedFont.family : 'Arial';
 }
