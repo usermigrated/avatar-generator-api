@@ -1,16 +1,4 @@
 
-// const { createCanvas } = require('canvas');
-const { createCanvas, registerFont } = require('canvas');
-const path = require('path');
-
-const fontPath = path.join(
-    __dirname,
-    '../../fonts/DejaVuSans.ttf'
-);
-
-registerFont(fontPath, {
-    family: 'AvatarFont'
-});
 // Default configuration
 const DEFAULTS = {
     background: '#dddddd',
@@ -74,6 +62,49 @@ function getNumber(value, fallback, min, max) {
     return Math.min(Math.max(Math.round(number), min), max);
 }
 
+// Escape special characters for SVG/XML
+function escapeXml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+// Generate SVG avatar
+function generateAvatar(initials, size, background, color) {
+    const fontSize = Math.round(size * 0.44);
+    const safeInitials = escapeXml(initials);
+
+    return `
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="${size}"
+     height="${size}"
+     viewBox="0 0 ${size} ${size}">
+
+    <rect
+        width="${size}"
+        height="${size}"
+        fill="${background}"
+    />
+
+    <text
+        x="50%"
+        y="50%"
+        fill="${color}"
+        font-family="Arial, sans-serif"
+        font-size="${fontSize}px"
+        font-weight="400"
+        text-anchor="middle"
+        dominant-baseline="central"
+        textLength="${Math.round(size * 0.85)}"
+        lengthAdjust="spacingAndGlyphs"
+    >${safeInitials}</text>
+
+</svg>`.trim();
+}
+
 // Netlify Function
 exports.handler = async (event) => {
     try {
@@ -112,52 +143,22 @@ exports.handler = async (event) => {
         // Generate initials
         const initials = getInitials(name, uppercase);
 
-        // Create canvas
-        const canvas = createCanvas(size, size);
-        const ctx = canvas.getContext('2d');
+        // Generate SVG
+        const svg = generateAvatar(
+            initials,
+            size,
+            background,
+            color
+        );
 
-        // Background
-        ctx.fillStyle = background;
-        ctx.fillRect(0, 0, size, size);
-
-        // Automatically fit text
-        let fontSize = Math.round(size * 0.44);
-
-
-        ctx.font = `${fontSize}px AvatarFont`;
-
-
-        while (
-            initials &&
-            ctx.measureText(initials).width > size * 0.85 &&
-            fontSize > 8
-        ) {
-            fontSize--;
-            ctx.font = `${fontSize}px AvatarFont`;
-        }
-
-        // Text styling
-        ctx.fillStyle = color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // Draw initials
-        if (initials) {
-            ctx.fillText(initials, size / 2, size / 2);
-        }
-
-        // Generate PNG buffer
-        const buffer = canvas.toBuffer('image/png');
-
-        // Return Base64-encoded binary image
+        // Return SVG response
         return {
             statusCode: 200,
             headers: {
-                'Content-Type': 'image/png',
+                'Content-Type': 'image/svg+xml; charset=utf-8',
                 'Cache-Control': 'public, max-age=3600'
             },
-            body: buffer.toString('base64'),
-            isBase64Encoded: true
+            body: svg
         };
 
     } catch (error) {
@@ -166,7 +167,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 500,
             headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain; charset=utf-8'
             },
             body: 'Unable to generate avatar'
         };
